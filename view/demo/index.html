@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ch">
+<head>
+    <title>liveapp-demo</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="Expires" content="-1" />
+    <meta http-equiv="pragram" content="no-cache" />
+    <meta name="apple-touch-fullscreen" content="YES" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  
+    <link rel="stylesheet" type='text/css' href="./view/demo/css/main-min.css?v=1.0" />
+</head>
+
+<body>
+    <!-- app -->
+    <div class='app'>
+        <!-- app-loading -->
+        <section class="app-loading">
+            <div class="spinner">
+                <div class="spinner-container container1">
+                    <div class="circle1"></div>
+                    <div class="circle2"></div>
+                    <div class="circle3"></div>
+                    <div class="circle4"></div>
+                </div>
+                <div class="spinner-container container2">
+                    <div class="circle1"></div>
+                    <div class="circle2"></div>
+                    <div class="circle3"></div>
+                    <div class="circle4"></div>
+                </div>
+                <div class="spinner-container container3">
+                    <div class="circle1"></div>
+                    <div class="circle2"></div>
+                    <div class="circle3"></div>
+                    <div class="circle4"></div>
+                </div>
+            </div>
+        </section>
+        <!-- /app-loading -->
+
+        <!-- app-content -->
+        <section class="app-content f-hide">
+
+            <!-- 页面内容 -->
+            <section id="p-index" class="p-ct">
+                <!-- 内容 -->
+                <div class="pageWrap"></div>
+                <!-- /内容 -->
+
+                <!-- 音乐 -->
+                <div class="u-music">音乐</div>
+                <!-- /音乐 -->
+            </section>
+            <!-- /页面内容 -->
+
+        </section>
+        <!-- /app-content -->
+    </div>
+    <!-- /app -->
+    
+    <script src="./dist/view/library/init_mobile.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        var WINDOW_LOAD = false;
+        var JS_VISION = 1.0;
+        var RES_DIR = '/liveapp-demo/';
+        var IMG_DIR = 'view/demo/images/';
+        
+        /*! seajs.js define*/
+        seajs.config({
+            // 路径
+            base : RES_DIR,
+            
+            // 跨文件配置类库
+            alias : {
+                // component
+                'show' : RES_DIR + 'component/show/show',
+
+                // component_module
+                'preLoad' : RES_DIR + 'component_module/preLoad/preLoad',
+                'mPage' : RES_DIR + 'component_module/mPage/mPage',
+                'media' : RES_DIR + 'component_module/media/media',
+                'svgAni' : RES_DIR + 'component_module/svgAni/svgAni',
+                'gifAni' : RES_DIR + 'component_module/gifAni/gifAni',
+                'touch' : RES_DIR + 'component_module/touch/touch',
+
+                // app
+                "app" : RES_DIR + 'view/demo/app',
+                // dist-app
+                "dist" : RES_DIR + 'dist/view/demo/app'
+            },
+
+            // 路径映射
+            map: [
+                [/\.css|js$/, function(url) {
+                        return url += (url.indexOf('?') === -1 ? '?' : '&') + 'v='+JS_VISION;
+                    }
+                ]
+            ]
+        });
+        
+        /*! 初始化加载模块*/
+        seajs.use(["app"], function(app){
+            app.init();
+        });
+
+        $(window).on('load', function(){
+            WINDOW_LOAD = true;
+        })
+
+        // 百度统计
+        var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+        document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F601216b48469105db95c145ece9945b7' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+</body>
+</html>

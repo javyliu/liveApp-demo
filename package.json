@@ -1,0 +1,25 @@
+{
+    "author" : "Cation",
+    "email" : "shoe11414255@qq.com",
+    "version" : "1.0.0",
+    "homepage" : "http://www.itisxiong.com",
+    "spm": {
+        "alias" : {
+            "show" : "dist/component/show/show",
+            "preLoad" : "dist/component_module/preLoad/preLoad",
+            "mPage" : "dist/component_module/mPage/mPage",
+            "media" : "dist/component_module/media/media",
+            "svgAni" : "dist/component_module/svgAni/svgAni",
+            "gifAni" : "dist/component_module/gifAni/gifAni",
+            "touch" : "dist/component_module/touch/touch"
+        }
+    },
+    "devDependencies": {
+        "grunt" : "^0.4.5",
+        "grunt-cmd-concat" : "~0.2.5",
+        "grunt-cmd-transport" : "~0.3.0",
+        "grunt-contrib-uglify" : "~0.2.4",
+        "grunt-contrib-cssmin" : "~0.10.0",
+        "grunt-contrib-clean" : "~0.5.0"
+    }
+}

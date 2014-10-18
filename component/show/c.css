@@ -1,0 +1,11 @@
+
+/**
+ * 分享显示组件样式
+ * @author cation
+ * @email shoe11414255@qq.com
+ */
+.m-imgText .gifAni { position: absolute; top: 50%; left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
