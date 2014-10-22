@@ -20,6 +20,7 @@
     }
 })('MPage', function(){
     'use strict';
+    
     /**
      * @method isType()
      * @description 判断类型
@@ -148,30 +149,6 @@
         }
     }
 
-    function hasClass(e, c) {
-        var re = new RegExp("(^|\\s)" + c + "(\\s|$)");
-        return re.test(e.className);
-    };
-
-    function addClass(e, c) {
-        if ( hasClass(e, c) ) {
-            return;
-        }
-
-        var newclass = e.className.split(' ');
-        newclass.push(c);
-        e.className = newclass.join(' ');
-    };
-
-    function removeClass(e, c) {
-        if ( !hasClass(e, c) ) {
-            return;
-        }
-
-        var re = new RegExp("(^|\\s)" + c + "(\\s|$)", 'g');
-        e.className = e.className.replace(re, ' ');
-    };
-
     /**
      * @method vendor()
      * @description 判断浏览器的私有头部，并返回其值
@@ -239,8 +216,62 @@
         MSPointerUp : 3
     };
 
+    /**
+     * @class Media
+     * @description 页面控制对象组件类
+     *
+     * @param {string | isElement} wrapper 操作节点对象或者选择器
+     * @param {string | isElement} page 页面对象或者页面选择器
+     * @param {object} opts 类实例化传入属性
+     *
+     * @example
+     * ```js
+     *   var _mPage = new MPage('.pageWrap', '.page', {
+     *       width : 640,
+     *       height : 1008,
+     *       isSingle : false,
+     *       scale : 0.5,
+     *       moveY : 2
+     *   });
+     *
+     * ```js - opts
+     * -自定页面切换开关
+     *    isStart 是否开启切换
+     *    isTouch 是否开启触摸功能
+     *    isPointerTouch 是否开启IE指针触摸功能
+     *    isImgTouch 是否开启触摸时图片禁止操作
+     *    isCycle 是否开启切换循环
+     *    isFirstChange 是否开启第一页循环
+     *    isSingle 是否开启单页面操作
+     *    
+     * -自定页面样式
+     *    pageStyle 页面的样式
+     *    current 初始化显示的页面
+     *    scale 当前页面移动时的大小变化
+     *    moveY 当前页面移动的距离比例
+     *
+     * -页面切换属性控制
+     *    useTransition 是否使用过渡效果 -- 该组件没有设置动画函数，一定使用过渡想过
+     *    useTransform 是否使用css3转变属性
+     *    easingType 过渡效果
+     *    transitionTime 移动过渡时间
+     *    transitionProperty 移动使用过渡的属性
+     *    translateThreshold 切换距离范围
+     * 
+     * -自定义事件
+     *    mPageCreate 初始化功能观察者
+     *    mPageDestory 功能注销观察者
+     *    mPageRefresh 页面容器刷新观察者
+     *    mPageStart 页面切换开始观察者
+     *    mPageMove 页面移动观察者
+     *    mPageTranslate 页面移动观察者
+     *    mPageEnd 页面移动结束观察者
+     *    mPageSuccess 页面切换成功观察者
+     *    mPageFial 页面切换失败观察者
+     *    mPageResize 页面容器尺寸变化观察者
+     *    mPageTransitionEnd 页面过渡效果结束观察者
+     */
 
-    // 页面控制对象
     function MPage(wrapper, page, options){
         // wrap-dom设置
         if ( typeof wrapper == 'undefined' || wrapper == '' ) {
@@ -261,32 +292,29 @@
 
         // 默认控制值配置
         this.options = {
-            isStart : false, // 是否开启切换
+            isStart : false, // 是否开启切换 - false开启，true注销
+            isMouse : true, // 是否开启鼠标切换
             isTouch : true, // 是否开启touch
             isPointerTouch : true, // 是否开启PointerTouch
-            ImgTouch : false, // 图片禁止滑动
+            isImgTouch : false, // 图片禁止滑动
+            isCycle : true,  // 是否循环
+            isFirstChange : false, // 是否开启第一页切换回去
+            isSingle : true, // 是否开启单页操作（当前页面不动）
 
             pageStyle : {}, // 页面样式
+            current : 0, // 当前显示页面位置
 
-            cycle : true,  // 是否循环
-            firstChange : false, // 是否开启第一页切换回去
+            scale : 0, // 当前页面移动时的大小变化
+            moveY : 1, // 当前页面移动的距离比例
 
-            resizePolling : 60, // resize时间回调
+            useTransition : true, // 是否使用过渡效果 -- 该组件没有设置动画函数，一定使用过渡想过
+            useTransform : true, // 是否使用css3转变属性 
+            easingType : 'linear', // 过渡效果
+            transitionTime : 400, // 移动过渡时间
+            transitionProperty : 'left, ' + '-' + vendor('transform') + '-transform', // 移动使用过渡的属性
+            translateThreshold : 100, // 切换距离范围
 
-            pageNow : 0, // 当前显示页面位置
-
-            single : true,
-            scale : 0,
-            moveY : 1,
-            easingType : 'cubic-bezier(0.1, 0.57, 0.1, 1)',
-
-            HWCompositing : true,
-            useTransition : true,
-            useTransform : true,
-
-            translateThreshold : 100,
-            transitionTime : 800,
-            transitionProperty : 'left, ' + '-' + vendor('transform') + '-transform'
+            resizePolling : 60 // resize时间回调
         };
 
         // 自定义控制值扩展
@@ -299,9 +327,9 @@
 
         this.hasTouch = this.options.isTouch && 'ontouchstart' in window;
         this.hasPointer = this.options.isPointerTouch && navigator.msPointerEnabled;
-        this.hasMouse = !this.hasTouch && !this.hasPointer && 'onmousedown' in window;
+        this.hasMouse = this.options.isMouse && 'onmousedown' in window;
 
-        this.pageNow = this.options.pageNow ? this.options.pageNow : 0;
+        this.pageNow = this.options.current ? this.options.current : 0;
 
         // Some defaults
         this.pageNum = this.page.length;
@@ -311,8 +339,13 @@
 
         this.init();
     }
+
     // 扩展原型
     MPage.prototype = {
+        /**
+         * @method init()
+         * @description 对象实例化默认执行的函数
+         */
         init : function(opts){
             // 样式设置
             this.style();
@@ -362,7 +395,12 @@
             this.events[type].push(fn);
         },
 
-        // this对象中，事件handle对象（处理事件的绑定函数）
+        /**
+         * @method this.handleEvent(e)
+         * @description 事件绑定，默认回调this->handleEvent
+         *
+         * @param {event} e event对象
+         */
         handleEvent: function (e) {
             switch ( e.type ) {
                 case 'touchstart':
@@ -394,7 +432,15 @@
 
         },
 
-        // 对象事件绑定（或者注销-true为注销，false为绑定）
+        /**
+         * @method initEvents()
+         * @description 初始化事件
+         * 
+         * @param  {booleam} remove 选择事件绑定还是解除
+         *
+         * @mPageCreate 触发组件对象创建成功事件观察者
+         * @mPageDestory 触发组件对象注销成功事件观察者
+         */
         initEvents: function (remove) {
             var that = this;
             var eventType = remove ? removeEvent : addEvent;
@@ -405,6 +451,7 @@
 
             // pc-mouse
             if ( this.hasMouse ) {
+console.log(1)                
                 eventType(target, 'mousedown', this);
                 eventType(target, 'mousemove', this);
                 eventType(target, 'mousecancel', this);
@@ -445,7 +492,10 @@
             }
         },
 
-        // style设置
+        /**
+         * @method style()
+         * @description style设置
+         */
         style : function(){
             var that = this;
 
@@ -461,7 +511,7 @@
                     item.style[prefixStyle(o)] = that.options.pageStyle;
                 }
 
-                if ( i == 0 ) {
+                if ( i == that.pageNow ) {
                     item.style.display = 'block';
                 }
             })
@@ -470,7 +520,12 @@
             this._transitionProperty( this.options.transitionProperty );
         },
 
-        // refresh刷新
+        /**
+         * @method refresh()
+         * @description refresh刷新
+         *
+         * @mPageRefresh 触发页面容易刷新观察者
+         */
         refresh : function(){
             var that = this;
 
@@ -490,10 +545,15 @@
             this.emit('mPageRefresh');
         },
 
-        // page触摸移动start
+        /**
+         * @method _start()
+         * @description page触摸移动start
+         *
+         * @mPageStart 触发页面触摸开始观察者
+         */
         _start : function(e){
             // 判断操作的是图片元素，禁止图片有拖拽效果
-            if ( this.options.ImgTouch && e.target.tagName == 'IMG') {
+            if ( this.options.isImgTouch && e.target.tagName == 'IMG') {
                 e.preventDefault();
             }
 
@@ -514,6 +574,8 @@
                 return;
             }
 
+            this._transitionTime();
+
             this.initiated = eventType[e.type];
             this.moved = false;
 
@@ -529,17 +591,18 @@
             this.emit('mPageStart');
         },
 
-        // page触摸移动move
+        /**
+         * @method _move()
+         * @description page触摸移动move
+         *
+         * @mPageMove 触发页面触摸移动观察者
+         */
         _move : function(e){
             e.preventDefault();
 
             // 判断操作的事件类型，保持操作一致
             if ( eventType[e.type] !== this.initiated ) {
                 return
-            }
-
-            if (this.moved) {
-                return;
             }
 
             if (!this.pointY || this.pointY == 0) {
@@ -567,7 +630,7 @@
             this.scale = 1 - Math.abs( (this.pointY - this.startY) * this.options.scale/this.pageHeight);
 
             // 图片移动
-            !this.options.single && this._translate(now, 0, newY, this.scale);
+            !this.options.isSingle && this._translate(now, 0, newY, this.scale);
             this._translate(next, 0, nextY);
 
             this.y = newY;
@@ -577,7 +640,10 @@
             this.emit('mPageMove');
         },
 
-        // page触摸移动判断方向
+        /**
+         * @method pagePosition()
+         * @description page触摸切换激活下一个页面
+         */
         pagePosition   : function(){      
             var now = this.page[this.pageNow], // 当前页面
                 del = this.pointY - this.startY, // 移动的距离
@@ -595,7 +661,7 @@
 
             // 设置下一页面的显示和位置        
             if (del <= 0) {
-                if ( this.pageNow == this.pageNum - 1 && this.options.cycle ) {
+                if ( this.pageNow == this.pageNum - 1 && this.options.isCycle ) {
                     this.pageNext = 0;
                 } else if ( this.pageNow == this.pageNum - 1 ) {
                     this.pageNext = null;
@@ -605,7 +671,7 @@
                 }
             } else {
                 if ( this.pageNow == 0 ) {
-                    if ( this.options.firstChange && this.options.cycle ) {
+                    if ( this.options.isFirstChange && this.options.isCycle ) {
                         this.pageNext = this.pageNum - 1;
                     } else {
                         this.pageNext = null;
@@ -631,21 +697,27 @@
             return node;
         },
 
-        // page触摸移动end
+        /**
+         * @method _end()
+         * @description page触摸移动end
+         *
+         * @mPageEnd 触发页面触摸结束观察者
+         */
         _end : function(e){
             // 判断操作的事件类型，保持操作一致
             if ( eventType[e.type] !== this.initiated ) {
                 return;
             }
 
+            // 注销控制值
+            this.initiated = 0;
+            this.directionY = 0;
+            this.directionLocked = 0;
+
             // 判断是否有move，没有判断为点击 --> 按钮的点击
             if ( Math.abs(this.pointY - this.startY) > 10 && !isNaN(this.pageNext) ) {
                 this.moved = true;
             } else {
-                // 注销控制值
-                this.initiated = 0;
-                this.directionY = 0;
-                this.directionLocked = 0;
                 this.moved = false;
                 return
             }
@@ -654,7 +726,7 @@
                 now = this.page[this.pageNow],
                 next = this.page[this.pageNext];
 
-            // 页面切换
+            // 页面切换 - 并设置相关页面变化的属性值
             if ( Math.abs(del) >= this.options.translateThreshold ) { // 切换成功
                 // 下一个页面的移动
                 this.nextY = 0;
@@ -663,12 +735,14 @@
                 this.y = del > 0 ? this.pageHeight/this.options.moveY : -this.pageHeight/this.options.moveY;
                 this.scale = 1 - this.options.scale;
             } else {   
+                // 还原到最初状态
                 this.y = 0
                 this.nextY = del > 0 ? -this.pageHeight : this.pageHeight;
                 this.scale = 1;
             }
 
-            !this.options.single && this._transitionTo(now, 0, this.y, this.scale, this.options.transitionTime, this.options.easingType);
+            // 页面开始移动
+            !this.options.isSingle && this._transitionTo(now, 0, this.y, this.scale, this.options.transitionTime, this.options.easingType);
             this._transitionTo(next, 0, this.nextY, 1, this.options.transitionTime, this.options.easingType);
 
             // end事件
@@ -721,9 +795,15 @@
          * @param {number} time 过渡时间值
          */
         _transitionTime : function (node, time) {
-            time = time || 0;
+            var time = time || 0;
 
-            node.style[prefixStyle('transitionDuration')] = time + 'ms';
+            if (node) {
+                node.style[prefixStyle('transitionDuration')] = time + 'ms';
+            } else {
+                _forEach(this.page, function(i, page){
+                    page.style[prefixStyle('transitionDuration')] = time + 'ms';
+                })
+            }
         },
 
         /**
@@ -743,14 +823,14 @@
          * @param {number} x 轮播图x位置值
          * @param {number} y 轮播图y位置值
          *
-         * @silderTranslate 触发切换移动观察者
+         * @mPageTranslate 触发切换移动观察者
          */
         _translate : function (node, x, y, scale) {
             if (!node) {
                 return
             }
 
-            scale = scale || 1;
+            var scale = scale || 1;
 
             //  是否开启位置旋转-硬件加速效果
             if ( this.options.useTransform ) {
@@ -771,18 +851,16 @@
          * @method _transitionEnd()
          * @description 切换过渡结束处理函数
          *
-         * @silderTransitionEnd 触发切换过渡结束观察者
+         * @mPageTransitionEnd 触发切换过渡结束观察者
          */
         _transitionEnd: function (event) {
             if ( !this.isInTransition ) {
                 return;
             }
 
-            // 停止运动
-            this.moved = false;
-
             // 并将isInTransition设为false
             // 执行停止回调函数
+            this._transitionTime();
             this.isInTransition = 0;
 
             if ( Math.abs(this.pointY - this.startY) >= this.options.translateThreshold ) {
@@ -790,26 +868,31 @@
             } else {
                 this._pageFial();
             }
- 
+
             // 页面相关操作
             this.x = 0;
             this.y = 0;
-            this.initiated = 0;
-            this.directionY = 0;
-            this.directionLocked = 0;
+
+            // 停止运动
+            this.moved = false;
 
             // 图片移动过渡结束观察者
             this.emit('mPageTransitionEnd');
         },
 
-        // 切换成功事件
+        /**
+         * @method _pageSuccess()
+         * @description 切换成功事件
+         *
+         * @mPageSuccess 触发切换成功观察者
+         */
         _pageSuccess : function(){
             var now = this.page[this.pageNow],
                 next = this.page[this.pageNext];
 
             // 判断最后一页让，开启循环切换
             if (this.pageNext == 0 && this.pageNow == this.pageNum - 1) {
-                this.firstChange = true;
+                this.options.isFirstChange = true;
             }
 
             now.style.display = 'none';
@@ -821,10 +904,6 @@
             this.pageNow = this.pageNext;
             this.pageNext = null;
 
-            // 切换成功后，执行当前页面的动画
-            removeClass(now, 'z-animate');
-            addClass(next, 'z-animate');
-
             // 成功
             this.emit('mPageSuccess', {
                 now : now,
@@ -832,7 +911,12 @@
             });
         },
 
-        // 切换失败事件
+        /**
+         * @method _pageFial()
+         * @description 切换失败事件
+         *
+         * @mPageSuccess 触发切换失败观察者
+         */
         _pageFial : function(){
             var now = this.page[this.pageNow],
                 next = this.page[this.pageNext];
@@ -851,7 +935,12 @@
             });
         },
 
-        // window-sizi变化
+        /**
+         * @method _resize()
+         * @description 页面容器尺寸变化（windows-riseze）
+         *
+         * @mPageResize 触发容器尺寸变化观察者
+         */
         _resize: function () {
             var that = this;
 
@@ -860,6 +949,9 @@
             this.resizeTimeout = setTimeout(function () {
                 that.refresh();
             }, this.resizePolling);
+
+            // 刷新
+            this.emit('mPageResize');
         }
     }
 

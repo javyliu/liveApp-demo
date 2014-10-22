@@ -180,18 +180,26 @@ define(function (require, exports, module){
 			var _mPage = new mPage('.pageWrap', '.m-page', {
 				'width' : width,
 				'height' : height,
-				'single' : false,
-	            'scale' : 0.5,
-	            'moveY' : 2
+				'isSingle' : true,
+	            'scale' : 0,
+	            'moveY' : 1
 			});
 			_mPage.on('mPageSuccess', function(options){
 				var svg = options.next.querySelectorAll('svg');
 				if (svg.length > 0 ) {
 					for (var i = 0, len = svg.length; i < len; i++) {
-						var _svgAni = new svgAni(svg[i]);
+						var _svg = svg[i];
+						if (_svg.dataset.render == 'true') {
+							return
+						}
 
-						$(svg[i]).removeClass('f-hide');
+						_svg.className.baseVal = _svg.className.baseVal.replace('f-hide', '');
+
+						var _svgAni = new svgAni(_svg);
 	           			_svgAni.render();
+	           			_svgAni.on('complete', function(){
+	           				_svg.dataset.render = 'true';
+	           			})
 					}
 				}
 			})

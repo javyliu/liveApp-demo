@@ -241,7 +241,7 @@
 				 	}
 
 				 	if (that.progressInit) {
-						that.progressNode.innerText = Math.floor(100*count/length) + '%';
+						that.progressNode.innerText = Math.floor(100*  count / length) + '%';
 				 	}
 					that.emit('preLoadProgress');
 				}
