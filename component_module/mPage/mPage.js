@@ -20,7 +20,7 @@
     }
 })('MPage', function(){
     'use strict';
-    
+
     /**
      * @method isType()
      * @description 判断类型
@@ -32,7 +32,7 @@
      * @example
      * ```js
      *   var a = [];
-     *   isArray(a)  --> true 
+     *   isArray(a)  --> true
      *   isString(a) --> false
      *
      *   var b = document.createElement('div');
@@ -69,7 +69,7 @@
      * @param {Array} agrs 回调函数执行的参数传递
      *
      * @return {function} 函数函数执行，传递指定参数
-     * 
+     *
      */
     Function.prototype.bind = Function.prototype.bind || function (target, agrs) {
         var self = this;
@@ -86,7 +86,7 @@
     /**
      * @method _forEach()
      * @description 遍历元素，分别对于回调函数处理
-     * 
+     *
      * @param {Array | element | object} elements 需要遍历处理的元素
      * @param {function} callback 回调处理函数
      *
@@ -96,11 +96,11 @@
         var i, key
         if (likeArray(elements)) {
             for (i = 0; i < elements.length; i++) {
-                if (callback.call(elements[i], i, elements[i]) === false) return elements   
+                if (callback.call(elements[i], i, elements[i]) === false) return elements
             }
         } else {
             for (key in elements) {
-                if (callback.call(elements[key], key, elements[key]) === false) return elements 
+                if (callback.call(elements[key], key, elements[key]) === false) return elements
             }
         }
 
@@ -178,7 +178,7 @@
     /**
      * @method prefixStyle()
      * @description 样式属性补全
-     * 
+     *
      * @param {strong} style 样式
      *
      * @return {string} 返回补全的样式
@@ -217,7 +217,7 @@
     };
 
     /**
-     * @class Media
+     * @class MPage
      * @description 页面控制对象组件类
      *
      * @param {string | isElement} wrapper 操作节点对象或者选择器
@@ -243,7 +243,7 @@
      *    isCycle 是否开启切换循环
      *    isFirstChange 是否开启第一页循环
      *    isSingle 是否开启单页面操作
-     *    
+     *
      * -自定页面样式
      *    pageStyle 页面的样式
      *    current 初始化显示的页面
@@ -257,7 +257,7 @@
      *    transitionTime 移动过渡时间
      *    transitionProperty 移动使用过渡的属性
      *    translateThreshold 切换距离范围
-     * 
+     *
      * -自定义事件
      *    mPageCreate 初始化功能观察者
      *    mPageDestory 功能注销观察者
@@ -308,10 +308,10 @@
             moveY : 1, // 当前页面移动的距离比例
 
             useTransition : true, // 是否使用过渡效果 -- 该组件没有设置动画函数，一定使用过渡想过
-            useTransform : true, // 是否使用css3转变属性 
+            useTransform : true, // 是否使用css3转变属性
             easingType : 'linear', // 过渡效果
             transitionTime : 400, // 移动过渡时间
-            transitionProperty : 'left, ' + '-' + vendor('transform') + '-transform', // 移动使用过渡的属性
+            transitionProperty : 'top, ' + '-' + vendor('transform') + '-transform', // 移动使用过渡的属性
             translateThreshold : 100, // 切换距离范围
 
             resizePolling : 60 // resize时间回调
@@ -322,8 +322,9 @@
             this.options[i] = options[i];
         }
 
-        this.options.useTransition = prefixStyle('transform') !== false && this.options.useTransition;
-        this.options.useTransform = prefixStyle('transition') in _elementStyle && this.options.useTransform;
+        //如果有其它动画函数的话可以在这里设置
+        this.options.useTransition = prefixStyle('transition') !== false && this.options.useTransition;
+        this.options.useTransform = prefixStyle('transform') in _elementStyle && this.options.useTransform;
 
         this.hasTouch = this.options.isTouch && 'ontouchstart' in window;
         this.hasPointer = this.options.isPointerTouch && navigator.msPointerEnabled;
@@ -376,7 +377,7 @@
             }
 
             for ( ; i < l; i++ ) {
-                this.events[type][i].apply(this, [].slice.call(arguments, 1)); 
+                this.events[type][i].apply(this, [].slice.call(arguments, 1));
             }
         },
 
@@ -435,7 +436,7 @@
         /**
          * @method initEvents()
          * @description 初始化事件
-         * 
+         *
          * @param  {booleam} remove 选择事件绑定还是解除
          *
          * @mPageCreate 触发组件对象创建成功事件观察者
@@ -451,7 +452,6 @@
 
             // pc-mouse
             if ( this.hasMouse ) {
-console.log(1)                
                 eventType(target, 'mousedown', this);
                 eventType(target, 'mousemove', this);
                 eventType(target, 'mousecancel', this);
@@ -532,8 +532,8 @@ console.log(1)
             this.pageWidth = this.options.width ? this.options.width : this.wrapper.clientWidth ? this.wrapper.clientWidth : window.innerWidth; // 页面宽度
             this.pageHeight = this.options.height ? this.options.height : this.wrapper.clientHeight ?  this.wrapper.clientHeight : window.innerHeight; // 页面高度
 
-            this.wrapper.style.width = this.pageWidth;
-            this.wrapper.style.height = this.pageHeight;
+            this.wrapper.style.width = this.pageWidth.toString()+"px";
+            this.wrapper.style.height = this.pageHeight.toString()+"px";
 
             // 页面设置高度和砍断
             _forEach(this.page, function(i, item){
@@ -580,7 +580,7 @@ console.log(1)
             this.moved = false;
 
             var point = e.touches ? e.touches[0] : e;
-            
+
             this.pointY = point.pageY;
             this.startY = point.pageY;
             this.directionX = 0;
@@ -644,7 +644,7 @@ console.log(1)
          * @method pagePosition()
          * @description page触摸切换激活下一个页面
          */
-        pagePosition   : function(){      
+        pagePosition   : function(){
             var now = this.page[this.pageNow], // 当前页面
                 del = this.pointY - this.startY, // 移动的距离
                 next, moveFirst, node;
@@ -659,7 +659,7 @@ console.log(1)
                 moveFirst = false;
             }
 
-            // 设置下一页面的显示和位置        
+            // 设置下一页面的显示和位置
             if (del <= 0) {
                 if ( this.pageNow == this.pageNum - 1 && this.options.isCycle ) {
                     this.pageNext = 0;
@@ -667,7 +667,7 @@ console.log(1)
                     this.pageNext = null;
                     return false
                 } else {
-                    this.pageNext = this.pageNow + 1;   
+                    this.pageNext = this.pageNow + 1;
                 }
             } else {
                 if ( this.pageNow == 0 ) {
@@ -678,7 +678,7 @@ console.log(1)
                         return false
                     }
                 } else {
-                    this.pageNext = this.pageNow - 1;   
+                    this.pageNext = this.pageNow - 1;
                 }
             }
 
@@ -687,7 +687,7 @@ console.log(1)
 
             // move阶段根据方向设置页面的初始化位置--执行一次
             if ( moveFirst ) {
-                // 设置下一页面的显示和位置        
+                // 设置下一页面的显示和位置
                 this.nextY = this.directionY == 'up' ? this.pageHeight : -this.pageHeight;
 
                 next.style.display = 'block';
@@ -734,7 +734,7 @@ console.log(1)
                 // 当前页面变小的移动
                 this.y = del > 0 ? this.pageHeight/this.options.moveY : -this.pageHeight/this.options.moveY;
                 this.scale = 1 - this.options.scale;
-            } else {   
+            } else {
                 // 还原到最初状态
                 this.y = 0
                 this.nextY = del > 0 ? -this.pageHeight : this.pageHeight;
@@ -780,13 +780,12 @@ console.log(1)
          * @param {string} property 过渡效果属性值
          */
         _transitionProperty : function(property){
-            var that = this,
-                property = property || 'all';
+            var that = this, property = property || 'all';
 
             _forEach(this.page, function(i, item){
                 item.style[prefixStyle('transitionProperty')] = property;
             })
-        },  
+        },
 
         /**
          * @method _transitionTime()
@@ -925,7 +924,7 @@ console.log(1)
             now.style[prefixStyle('transform')] = '';
             next.style[prefixStyle('transform')] = '';
             next.style.zIndex = '8';
-            
+
             this.pageNext = null;
 
             // 成功

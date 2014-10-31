@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width" />
+<title>test</title>
+<style type="text/css" media="all">
+html,body{height:100%;}
+.pageWrap{overflow:hidden;}
+</style>
+<link rel="stylesheet" type='text/css' href="./css/main-min.css" />
+
+</head>
+<body>
+<div class="pageWrap">
+  <div class="m-page">
+    <img src="./images/1.jpg" alt="" />
+  </div>
+  <div class="m-page">
+    <img src="./images/2.jpg" alt="" />
+  </div>
+  <div class="m-page">
+    <img src="./images/3.jpg" alt="" />
+  </div>
+  <div class="m-page">
+    <img src="./images/4.jpg" alt="" />
+  </div>
+</div>
+<script src="../../component_module/mPage/mPage.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+var _mPage;
+window.onload = function(){
+  _mPage= new MPage('.pageWrap', '.m-page', {
+      width : 320,
+      height : 568,
+      isSingle : true,
+      scale : 0.5,
+      moveY : 1,
+      isCycle : false
+      });
+
+}
+
+//var _mPage = new MPage('.pageWrap', '.m-page', {
+//           width : 320,
+//           height : 568,
+//           isSingle : true,
+//           scale : 0.5,
+//           moveY : 2
+//       });
+</script>
+
+</body>
+</html>
