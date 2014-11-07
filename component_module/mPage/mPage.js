@@ -403,17 +403,16 @@
          * @param {event} e event对象
          */
         handleEvent: function (e) {
+          console.log(e.type)
             switch ( e.type ) {
                 case 'touchstart':
                 case 'MSPointerDown':
                 case 'mousedown':
-                    this._start(e);
-                    break;
+                  return  this._start(e);
                 case 'touchmove':
                 case 'MSPointerMove':
                 case 'mousemove':
-                    this._move(e);
-                    break;
+                  return   this._move(e);
                 case 'touchend':
                 case 'MSPointerUp':
                 case 'MSPointerOut':
@@ -422,13 +421,12 @@
                 case 'touchcancel':
                 case 'MSPointerCancel':
                 case 'mousecancel':
-                    this._end(e);
-                    break;
+                   return  this._end(e);
                 case 'transitionend':
                 case 'webkitTransitionEnd':
                 case 'oTransitionEnd':
                 case 'MSTransitionEnd':
-                    this._transitionEnd(e);
+                  return  this._transitionEnd(e);
             }
 
         },
@@ -508,7 +506,7 @@
 
                 // 自定时page样式
                 for ( var o in that.options.pageStyle ) {
-                    item.style[prefixStyle(o)] = that.options.pageStyle;
+                    item.style[prefixStyle(o)] = that.options.pageStyle[o];
                 }
 
                 if ( i == that.pageNow ) {
